@@ -5,7 +5,7 @@ a = 1
 print(a)
 
 # --- 2 ---
-# Définition de variables
+# Définition de exercices
 age = 35
 first_name = "Kevin"
 sentence = f'Je suis {first_name} et j\'ai {age} ans.'
@@ -13,7 +13,7 @@ sentence = f'Je suis {first_name} et j\'ai {age} ans.'
 print(sentence)
 
 # --- 3 ---
-# Affichage de variables
+# Affichage de exercices
 print(age, first_name)
 
 # --- 4 ---
