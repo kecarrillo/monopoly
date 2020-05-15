@@ -34,6 +34,8 @@ class Cell:
         """
         if ownership.is_mortgaged is False and ownership.owner != pawn.form:
             pawn.give_money(ownership.rent(), ownership.owner)
+        elif ownership.owner == Game.board:
+            pawn.buy_ownership()
         else:
             pass
 
