@@ -1,7 +1,8 @@
 class Cell:
-    position
-    name
-    owner # Bank, Board, Pawn
+    def __init__(self, position, name):
+        self.position = position
+        self.name = name
+        # self.owner = Game.board
 
     def pay_a_rent(self):
         pass
@@ -9,14 +10,8 @@ class Cell:
     def buy_a_ownership(self):
         pass
 
-    def get_board_money(self):
-        pass
-
-    def draw_a_card(self):
-        pass
-
-    def go_to_jail(self):
-        pass
+    # def get_board_money(self):
+    #     pass
 
     def luxury_tax_rent(self):
         pass
