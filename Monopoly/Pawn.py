@@ -2,11 +2,12 @@ import random
 
 # from Monopoly.Bank import Bank
 # from Monopoly.Card import Card
+from Monopoly.Owner import Owner
 from Monopoly.WIP.Phase import Phase
 # from Monopoly.Auction import Auction
 
 
-class Pawn:
+class Pawn(Owner):
     """
     This class represents the avatar of the players.
     """

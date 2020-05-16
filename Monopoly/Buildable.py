@@ -18,3 +18,11 @@ class Buildable(Ownership):
 
     def get_hotel(self):
         pass
+
+    @classmethod
+    def complex_rent( cls, name ):
+        pass
+
+    @classmethod
+    def simple_empty_rent( cls, name ):
+        pass
