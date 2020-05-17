@@ -2,8 +2,7 @@ from Monopoly.Game import Game
 
 
 class Cell:
-    """
-    This class represents the cells from the board game.
+    """This class represents the cells from the board game.
     """
     def __init__(self, position, name, group):
         """This method is the constructor of the class.

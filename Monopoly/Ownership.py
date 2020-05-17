@@ -3,8 +3,7 @@ from Monopoly.Cell import Cell
 
 
 class Ownership(Cell):
-    """
-    This class represents the ownership of the bank, the board and the pawn.
+    """This class represents the ownership of the bank, the board and the pawn.
     """
 
     def __init__(self, name, position, color, price, mortgage_price, group):

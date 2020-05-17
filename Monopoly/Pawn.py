@@ -12,7 +12,7 @@ class Pawn(Owner):
     This class represents the avatar of the players.
     """
 
-    def __init__(self, form):
+    def __init__(self, name, money):
         """This method is the constructor of the class.
 
         :param form: Form of the pawn.
@@ -20,11 +20,12 @@ class Pawn(Owner):
         :return: create a pawn.
         :rtype: string
         """
+        super().__init__(name, money)
         print(f'{self.form} créé.')
-        self.form = form
+        self.form = name
         self.position = 0
         self.turn = 0
-        self.money = 150_000
+        self.money = money
         self.jail_time = 0
         self.free_card = 0
         self.double = 0
