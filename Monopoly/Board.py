@@ -1,30 +1,22 @@
-import random
-from Monopoly.Pawn import Pawn
+from Monopoly.Owner import Owner
+from Monopoly.ClassManager.Singleton import Singleton
 
 
-def roll_dice():  # Roll dices
-    dice_1 = random.randrange(6)
-    dice_2 = random.randrange(6)
-    return dice_1, dice_2
+@Singleton
+class Board(Owner):
+    """
+    This class represents the board game (unique owner).
+    """
+    def __init__(self, name, money):
+        """This method is the constructor of the class.
 
-
-def check_rolls():  # Check results
-    double = 0
-
-    dice_1, dice_2 = roll_dice()
-    result = dice_1 + dice_2
-
-    Pawn.moving(result)
-    if dice_1 == dice_2:
-        if double < 3:
-            roll_dice()
-            double += 1
-        else:  # go to jail
-            pass
-    Pawn.turn += 1
-
-
-class Board:
-    cell_number = 40
-    money = 0
-    pawn = 0
+        :param name: Name of the board game.
+        :type name: string
+        :param money: Money possessed by the board game.
+        :type money: integer
+        """
+        super().__init__(name, money)
+        self.name = name
+        self.cell_number = 40
+        self.money = money
+        self.pawn = 0
