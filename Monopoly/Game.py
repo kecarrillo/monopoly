@@ -6,6 +6,9 @@ class Game:
     pawn_number
     phase
 
+    random.shuffle(self.deck_chance)
+    random.shuffle(self.deck_community)
+
     def start_game(self):
         pass
 
