@@ -6,5 +6,5 @@ class Pawns(Enum):
     CAR = "voiture"
     SHOES = "chaussure"
     HAT = "chapeau"
-    THIMBLE = "dé à coudre"
+    THIMBLE = "dé"
     RIDER = "cavalier"
