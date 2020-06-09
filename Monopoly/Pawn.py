@@ -137,12 +137,11 @@ class Pawn(Owner):
             self.jail_time = 0
             self.roll_dice()
 
-    def is_penniless(self, creditor, buildables, give_up=False):
+    def is_penniless(self, creditor, give_up=False):
         """This method is used when the money's pawn is below 0.
 
         :param creditor: The creditor of the pawn.
         :type creditor: Owner
-        .. todo:: list n'est pas apprécié ici
         :param buildables: The Buildable of the player
         :type list
         :param give_up: If the pawn give up the game.
@@ -151,7 +150,7 @@ class Pawn(Owner):
         :rtype: string
         """
         amount = 0
-        for buildable in buildables:
+        for buildable in self.possessions:
             if buildable.nb_hotel > 0:
                 amount += (buildable.hotel_price / 2) + \
                           ((buildable.house_price / 2) * 4)
@@ -168,13 +167,13 @@ class Pawn(Owner):
         else:
             print("Rien n'est joué!")
 
-    def give_up(self, creditor, buildables):
+    def give_up(self, creditor):
         """This method is used when a player wants to give up the game.
 
         :return: End of the game for the player
         :rtype: string
         """
-        self.is_penniless(creditor, buildables, True)
+        self.is_penniless(creditor, self.possessions, True)
 
     def buy_ownership(self, ownership, owner):
         """This method allows the pawn to buy an ownership.
@@ -191,7 +190,7 @@ class Pawn(Owner):
         ownership.owner = self.form
         self.possessions.append(ownership)
 
-    def buy_house(self, color, buildable, owner):
+    def buy_house(self, bank):
         """This method allows the pawn to buy a house.
 
         :param owner: The bank.
@@ -203,25 +202,37 @@ class Pawn(Owner):
         :return: Buying house.
         :rtype: void
         """
-        if color.name is "colorless":
+        self.choose_possession()
+        if self.possession.color is "colorless":
             print("Ce terrain ne peut pas possèder de maison!")
         else:
-            if buildable.owner is not self.form:
+            nb_same_color = len(
+                self.possession.groups[self.possession.color])
+            nb_total_house = 0
+            for ownership in self.possessions:
+                if ownership.color == self.possession.color:
+                    nb_total_house += ownership.nb_house
+
+            if self.possession.owner is not self.form:
                 print("Vous devez être le propriétaire du terrain pour acheter"
                       " des maisons!")
+                self.possession = None
             else:
-                max_house = color.nb_house // color.nb_buildable
-                if max_house == buildable.nb_house:
-                    amount = buildable.house_price
-                    self.give_money(amount, owner)
-                    buildable.nb_house += 1
-                elif max_house == 4:
+                max_house = round(nb_same_color/nb_total_house) + 1
+                if max_house < self.possession.nb_house:
+                    amount = self.possession.house_price
+                    self.give_money(amount, bank)
+                    self.possession.nb_house += 1
+                    self.possession = None
+                elif self.possession.nb_house == 4:
                     print("Nombre maximal de maison atteinte!")
+                    self.possession = None
                 else:
                     print("Le nombre de maison sur les terrains de même "
                           "couleurs doivent être identiques!")
+                    self.possession = None
 
-    def buy_hotel(self, color, buildable, owner):
+    def buy_hotel(self, bank):
         """This method allows the pawn to buy a hotel.
 
         :param owner: The bank.
@@ -233,23 +244,35 @@ class Pawn(Owner):
         :return: Buying hotel.
         :rtype: void
         """
-        if buildable.owner is not self.form:
+        self.choose_possession()
+        if self.possession.color is "colorless":
+            print("Vous ne pouvez pas bâtir d'hôtel sur ce terrain.")
+            self.possession = None
+        elif self.possession.owner is not self.form:
             print("Vous devez être le propriétaire du terrain pour acheter"
                   " un hotel!")
+            self.possession = None
         else:
-            max_house = color.nb_house // color.nb_buildable
-            if max_house == 4 and buildable.nb_hotel < 1:
-                amount = buildable.hotel_price
-                self.give_money(amount, owner)
-                buildable.nb_hotel += 1
-                buildable.nb_house = 0
-            elif max_house == 4 and buildable.nb_hotel > 0:
+            nb_same_color = len(
+                self.possession.groups[self.possession.color] )
+
+            if self.possession.nb_house == nb_same_color * 4 \
+                    and self.possession.nb_hotel < 1:
+                amount = self.possession.hotel_price
+                self.give_money(amount, bank)
+                self.possession.nb_hotel += 1
+                self.possession.nb_house = 0
+                self.possession = None
+            elif self.possession.nb_house == 4 \
+                    and self.possession.nb_hotel > 0:
                 print("Vous ne pouvez construire qu'un seul hotel par "
                       "terrain!")
+                self.possession = None
             else:
                 print("Vous ne possèdez pas le nombre de maisons requises!")
+                self.possession = None
 
-    def sell_hotel(self, buildable):
+    def sell_hotel(self):
         """This method allows the pawn to sell a hotel he possess.
 
         :param buildable: Ownership with a price.
@@ -257,19 +280,23 @@ class Pawn(Owner):
         :return: Selling hotel.
         :rtype: void
         """
-        if buildable.owner is not self.form:
+        self.choose_possession()
+        if self.possession.owner is not self.form:
             print("Vous devez être le propriétaire du terrain pour vendre"
                   " un hotel!")
+            self.possession = None
         else:
-            if buildable.nb_hotel == 1:
-                amount = (buildable.hotel_price / 2) + \
-                         ((buildable.house_price / 2) * 4)
+            if self.possession.nb_hotel == 1:
+                amount = (self.possession.hotel_price / 2) + \
+                         ((self.possession.house_price / 2) * 4)
                 self.get_money(amount)
-                buildable.nb_hotel = 0
+                self.possession.nb_hotel = 0
+                self.possession = None
             else:
                 print("Vous ne pouvez vendre que si vous possèdez un hotel!")
+                self.possession = None
 
-    def sell_house(self, color, buildable):
+    def sell_house(self):
         """This method allows the pawn to sell a house he possess.
 
         :param color: Color object which organize the ownerships.
@@ -279,23 +306,35 @@ class Pawn(Owner):
         :return: Selling house.
         :rtype: void
         """
-        if buildable.owner is not self.form:
+        self.choose_possession()
+        if self.possession.owner is not self.form:
             print("Vous devez être le propriétaire du terrain pour vendre"
                   " des maisons!")
+            self.possession = None
         else:
-            max_house = color.nb_house // color.nb_buildable
-            if max_house == buildable.nb_house:
-                amount = buildable.house_price / 2
+            nb_same_color = len(
+                self.possession.groups[self.possession.color] )
+            nb_total_house = 0
+            for ownership in self.possessions:
+                if ownership.color == self.possession.color:
+                    nb_total_house += ownership.nb_house
+            max_house = round(nb_same_color/nb_total_house) + 1
+
+            if max_house == self.possession.nb_house:
+                amount = self.possession.house_price / 2
                 self.get_money(amount)
-                buildable.nb_house -= 1
-            elif buildable.nb_house == 0:
+                self.possession.nb_house -= 1
+                self.possession = None
+            elif self.possession.nb_house == 0:
                 print("Nombre maximal de maison vendues atteinte pour ce "
                       "terrain!")
+                self.possession = None
             else:
                 print("Le nombre de maison sur les terrains de même "
                       "couleurs doivent être identiques!")
+                self.possession = None
 
-    def make_mortgage(self, ownership):
+    def make_mortgage(self):
         """This method is used to make mortgage.
 
         It permits the pawn to mortgage his ownership and to contract a debt.
@@ -305,12 +344,14 @@ class Pawn(Owner):
         :return: Make the mortgage.
         :rtype: void
         """
-        amount = ownership.mortgage_price
+        self.choose_possession()
+        amount = self.possession.mortgage_price
         self.get_money(amount)
-        ownership.is_mortgaged = True
+        self.possession.is_mortgaged = True
         self.debt += amount
+        self.possession = None
 
-    def refund_mortgage(self, ownership, owner):
+    def refund_mortgage(self, owner):
         """This method is used for the refund of mortgage.
 
         It permits the pawn to catch back his ownership and be free of a debt.
@@ -322,15 +363,16 @@ class Pawn(Owner):
         :return: Refund the mortgage.
         :rtype: void
         """
-        amount = ownership.mortgage_price + ownership.mortgage_price * 0.1
+        self.choose_possession()
+        amount = self.possession.mortgage_price + \
+                 self.possession.mortgage_price * 0.1
         self.give_money(amount, owner)
-        ownership.is_mortgaged = False
-        self.debt -= ownership.mortgage_price
+        self.possession.is_mortgaged = False
+        self.debt -= self.possession.mortgage_price
+        self.possession = None
 
     def draw_card(self, deck, retry=False):
         """This method allows the pawn to draw a card.
-
-        .. todo:: Vérifier méthode action()
 
         :param deck: Instance of Card.
         :type deck: Card
@@ -367,7 +409,6 @@ class Pawn(Owner):
 
     def auction_sale(self):
         """This method allows the pawn to create an auction sale.
-        .. todo:: Faire l'itération d'objet
         :param possession: The possession of the pawn.
         :type possession: Object
         :return: Alert.
@@ -390,14 +431,13 @@ class Pawn(Owner):
         else:
             print("Une enchère doit mettre en jeu une possession!")
 
-    def auction_bid(self, amount, possession):
+    def auction_bid(self, amount):
         """ This method allows the pawn to make a bid in an auction sale.
-        ... todo:: compléter la classe
         :param amount:
         :param possession:
         :return:
         """
-        print(f"{self.form} enchérit à {amount}F pour {possession}!")
+        print(f"{self.form} enchérit à {amount}F!")
 
     def choose_possession(self):
         """

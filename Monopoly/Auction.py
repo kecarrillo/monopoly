@@ -70,6 +70,9 @@ class Auction:
             raise TimerError(f"Timer is running. Use .stop() to stop it")
 
         self.start_auction = perf_counter()
+
+        print("Enchérissez!")
+
         elapsed_time = perf_counter() - self.start_auction
         if elapsed_time == self.time_up:
             self.stop(True)

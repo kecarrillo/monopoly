@@ -17,7 +17,7 @@ class Cell:
         """
         self.position = position
         self.name = name
-        self.owner = Game.board
+        self.owner = None
         self.group = group
 
     @staticmethod

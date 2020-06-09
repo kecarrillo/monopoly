@@ -1,3 +1,4 @@
+from Monopoly.Cell import Cell
 from Monopoly.Owner import Owner
 from Monopoly.ClassManager.Singleton import Singleton
 
@@ -24,6 +25,7 @@ class Board(Owner):
         self.cell_number = 40
         self.money = money
         self.pawn = 0
+        self.cell = Cell(position, name, group)
 
     def launch_cell_actions(self, pawn, owner=None, rent=None, card=None):
         """

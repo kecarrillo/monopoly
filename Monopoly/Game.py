@@ -115,8 +115,7 @@ class Game:
         self.board.launch_cell_actions(current_pawn, current_pawn.position)
         self.availbale_actions(current_pawn)
 
-
-    def availbale_actions(self, current_pawn):
+    def availbale_actions(self, current_pawn, amount=None):
         """
         This method allows the pawn to make actions.
 
@@ -136,10 +135,14 @@ class Game:
                   f'{self.pawns[1]}.')
         elif choice == 2:
             current_pawn.auction_sale()
+            auction = current_pawn.auction
+            for pawn in self.pawns:
+                if pawn.auction_bid(amount):
+                    auction.make_bid(pawn, amount)
             self.availbale_actions(current_pawn)
         elif choice == 3:
-            current_pawn.buy_house()
+            current_pawn.buy_house(self.bank)
             self.availbale_actions(current_pawn)
         elif choice == 4:
-            current_pawn.buy_hotel()
+            current_pawn.buy_hotel(self.bank)
             self.availbale_actions(current_pawn)
