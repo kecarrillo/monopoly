@@ -76,7 +76,7 @@ class Card:
         elif action_group == "forward":
             self.move_forward()
         elif action_group == "repair":
-            self.repair()
+            self.repair(pawn, amount_1, amount_2, owner)
         elif action_group == "jail":
             self.go_to_jail(pawn)
         elif action_group == "free":
