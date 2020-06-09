@@ -31,6 +31,7 @@ class Auction:
         self.min_bid = min_bid
         self.time_up = time_up
         self.start_auction = None
+        self.start()
 
     def __del__(self):
         """This method destroy the auction."""
@@ -59,7 +60,12 @@ class Auction:
                   f'l\'enchère actuelle!')
 
     def start(self):
-        """Start a new timer"""
+        """Start a new timer, and stop it if the time is up.
+
+        :return: start the timer. If it's a times up, run the stop() method.
+        :rtype: void
+        :raise TimeError: If the timer is not None.
+        """
         if self.start_auction is not None:
             raise TimerError(f"Timer is running. Use .stop() to stop it")
 
@@ -69,7 +75,7 @@ class Auction:
             self.stop(True)
 
     def stop(self, times_up=False):
-        """Stop the timer, and report the elapsed time
+        """Stop the timer, and report the elapsed time.
 
         :param times_up: Is it a times up?
         :type times_up: boolean
@@ -91,5 +97,7 @@ class Auction:
             else:
                 new_owner = max(self.bids.iteritems(), key=itemgetter(1))[0]
                 self.ownership.owner = new_owner
+                self.owner.possessions.remove(self.ownership)
+                new_owner.possessions.append(self.ownership)
                 new_owner.give_money(self.min_bid, self.owner)
                 self.__del__()

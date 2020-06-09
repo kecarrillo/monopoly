@@ -4,6 +4,8 @@ from random import shuffle
 from Monopoly.Bank import Bank
 from Monopoly.Board import Board
 from Monopoly.Datas.Enum_pawn import Pawns
+from Monopoly.Datas.Data_cards import cards_list
+from Monopoly.Deck import Deck
 from Monopoly.Exceptions.PawnFormError import PawnFormError
 from Monopoly.Exceptions.PawnsNumberError import PawnsNumberError
 from Monopoly.Pawn import Pawn
@@ -26,11 +28,17 @@ class Game:
         self.nb_pawn = 0
         self.start_money = 150_000
         self.players = []
+        self.cards_list = cards_list
+        self.cards = []
+        self.board = None
+        self.bank = None
+        self.deck = None
         print("Création du Monoploy terminée.")
 
     def __del__(self):
         """
         This method destruct this instance of Game.
+
         :return: Destroy the Game's instance.
         :rtype: void
         """
@@ -72,41 +80,66 @@ class Game:
         else:
             shuffle(self.pawns)
             print(f'Les pions avanceront dans cet ordre: {self.pawns}.')
-            board = Board("board", 0)
-            bank = Bank("bank", 10_000_000, 32, 12)
+            self.board = Board("board", 0)
+            self.bank = Bank("bank", 10_000_000, 32, 12)
+            self.deck = Deck()
 
-        # TODO: make a function to instance cards
-        # if self.pawns is False:
-        #     self.start_game()
-        # else:
-        #     card = Card(name, action_group, group, sentence, amount_1,
-        #          amount_2=None)
+        self.turn()
 
-    def make_cards(self, name, action_group, group, sentence, amount_1,
-                 amount_2=None):
+    def end_game(self):
+        self.__del__()
+
+    def turn(self):
         """
-        This method instances cards.
+        This method represents a turn.
 
-        :param name:
-        :param action_group:
-        :param group:
-        :param sentence:
-        :param amount_1:
-        :param amount_2:
-        :return:
+        :return: A turn.
+        :rtype: list
         """
+        current_pawn = self.pawns.pop[0]
+        self.phases(current_pawn)
+        self.pawns.append(current_pawn)
+
+    def phases(self, current_pawn):
+        """
+        This method represents game phases.
+
+        :param current_pawn: Current pawn.
+        :type current_pawn: Pawn
+        :return: Game phases.
+        :rtype: void
+        """
+        if len(self.pawns) == 1:
+            self.end_game()
+        current_pawn.roll_dice()
+        self.board.launch_cell_actions(current_pawn, current_pawn.position)
+        self.availbale_actions(current_pawn)
 
 
+    def availbale_actions(self, current_pawn):
+        """
+        This method allows the pawn to make actions.
 
-    # turn
-    # pawn_number
-    # phase
-    #
-    # random.shuffle(self.deck_chance)
-    # random.shuffle(self.deck_community)
-    #
-    # def start_game(self):
-    #     pass
-    #
-    # def end_game(self):
-    #     pass
+        :param current_pawn: Current pawn.
+        :type current_pawn: Pawn
+        :return: Actions of pawn.
+        :rtype: void
+        """
+        choice = input("Quelle action souhaitez vous effectuer?\n"
+                       "(1) Passer\n(2) Enchères\n(3) Acheter des maisons\n"
+                       "(4) Acheter un hotel")
+        if choice not in range(1,5):
+            print("Erreur de saisie, veuillez choir un nombre entre 1 et 4.")
+            self.availbale_actions(current_pawn)
+        elif choice == 1:
+            print(f'{current_pawn} a terminé son tour, c\'est au tour de '
+                  f'{self.pawns[1]}.')
+        elif choice == 2:
+            current_pawn.auction_sale()
+            self.availbale_actions(current_pawn)
+        elif choice == 3:
+            current_pawn.buy_house()
+            self.availbale_actions(current_pawn)
+        elif choice == 4:
+            current_pawn.buy_hotel()
+            self.availbale_actions(current_pawn)

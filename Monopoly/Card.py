@@ -15,7 +15,7 @@ class Card:
         """
 
         :param name: Name of the card.
-        :type name: string
+        :type name: integer
         :param action_group: Action when chance or community card is drown.
         :type action_group: string
         :param group: It is chance or community deck.
@@ -33,24 +33,7 @@ class Card:
         self.sentence = sentence
         self.amount_1 = amount_1
         self.amount_2 = amount_2
-        self.deck_community = []
-        self.deck_chance = []
-        self.sorting_card()
-
-        # Sort cards
-
-    def sorting_card(self):
-        """This method sort cards into community and luck pack.
-
-        :return: Sort cards in the right deck.
-        :rtype: void
-        """
-        if self.group == "chance":
-            self.deck_chance.append(self)
-            self.owner = self.deck_chance
-        else:
-            self.deck_community.append(self)
-            self.owner = self.deck_community
+        self.owner = None
 
     def action(self, action_group, amount_1, owner, pawn, amount_2=None):
         """This method will determine the action to process depending on Game
@@ -188,11 +171,12 @@ class Card:
         if choice == "1":
             pawn.give_money(amount_1, owner)
         else:
-            pawn.draw_card(self.deck_chance)
+            pawn.draw_card()
 
     @staticmethod
     def repair(pawn, amount_1, amount_2, owner):
-        """ This method will calculate the cost of repairing depending of the number of houses and hotels, the pawn
+        """ This method will calculate the cost of repairing depending of the
+        number of houses and hotels, the pawn
         owns.
 
         :param pawn: The pawn .

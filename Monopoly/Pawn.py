@@ -1,10 +1,7 @@
 import random
 
-# from Monopoly.Bank import Bank
-# from Monopoly.Card import Card
+from Monopoly.Auction import Auction
 from Monopoly.Owner import Owner
-from Monopoly.WIP.Phase import Phase
-# from Monopoly.Auction import Auction
 
 
 class Pawn(Owner):
@@ -30,6 +27,8 @@ class Pawn(Owner):
         self.free_card = 0
         self.double = 0
         self.debt = 0
+        self.possessions = []
+        self.possession = None
 
     def __del__(self):
         """This method is the destructor of the class.
@@ -51,7 +50,6 @@ class Pawn(Owner):
     def roll_dice(self):  # Roll dices
         """This method rolls 2 dices.
 
-        .. todo:: Phase encore d'actualité?
         :return: Roll dices.
         :rtype: void
         """
@@ -67,14 +65,12 @@ class Pawn(Owner):
                     if self.position > 39:
                         self.salary()
                         self.position = self.position - 40
-                    Phase.cell_phase(self.position)
                     self.roll_dice()
             else:
                 self.position = self.position + dice_1 + dice_2
                 if self.position > 39:
                     self.salary()
                     self.position = self.position - 40
-                Phase.cell_phase(self.position)
         else:
             self.is_jailed(dice_1, dice_2)
             self.jail_time += 1
@@ -193,6 +189,7 @@ class Pawn(Owner):
         amount = ownership.price
         self.give_money(amount, owner)
         ownership.owner = self.form
+        self.possessions.append(ownership)
 
     def buy_house(self, color, buildable, owner):
         """This method allows the pawn to buy a house.
@@ -368,7 +365,7 @@ class Pawn(Owner):
                 draw_card.owner = self.form
                 self.free_card += 1
 
-    def auction_sale(self, possession):
+    def auction_sale(self):
         """This method allows the pawn to create an auction sale.
         .. todo:: Faire l'itération d'objet
         :param possession: The possession of the pawn.
@@ -376,12 +373,20 @@ class Pawn(Owner):
         :return: Alert.
         :rtype: string
         """
-        if possession is not None:
-            if possession.owner == self.form:
-                print(f"{self.form} vend {possession} au plus offrant!")
+        if self.possession is not None:
+            if self.possession.owner == self.form:
+                print(f"{self.form} vend {self.possession} au plus offrant!")
+                min_bid = int(input("Quel est le prix minimum attendu?"))
+                if min_bid < 0:
+                    print("Erreur: l'enchère minimum ne peut pas être "
+                          "négative!")
+                else:
+                    self.auction = Auction(self.possession, self.form, min_bid)
+                    self.possession = None
             else:
                 print("Vous devez être propriétaire du bien pour le mettre "
                       "aux enchères!")
+                self.possession = None
         else:
             print("Une enchère doit mettre en jeu une possession!")
 
@@ -393,3 +398,17 @@ class Pawn(Owner):
         :return:
         """
         print(f"{self.form} enchérit à {amount}F pour {possession}!")
+
+    def choose_possession(self):
+        """
+        This method allows the pawn to choose one of his possession.
+
+        :return: Choice of a possession.
+        :rtype: void
+        """
+        possession = input(f'Choisissez une de vos possessions parmi \n'
+                           f'{self.possessions}')
+        if possession.owner == self.form:
+            self.possession = possession
+        else:
+            self.choose_possession()

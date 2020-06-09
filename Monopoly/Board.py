@@ -1,8 +1,8 @@
 from Monopoly.Owner import Owner
 from Monopoly.ClassManager.Singleton import Singleton
 
-from monopoly.Monopoly import Card, Game
-from monopoly.Monopoly.datas import enum_buidable
+from Monopoly import Card
+from Monopoly.Datas import Enum_buidable
 
 
 @Singleton
@@ -25,7 +25,7 @@ class Board(Owner):
         self.money = money
         self.pawn = 0
 
-    def launch_cell_actions(self, pawn, owner, rent, card):
+    def launch_cell_actions(self, pawn, owner=None, rent=None, card=None):
         """
         This method launches different actions due to pawn position on the board.
 
@@ -69,7 +69,7 @@ class Board(Owner):
             pawn.go_to_jail()
         # For ownership_cells
         else:
-            for _ in enum_buidable:
+            for _ in Enum_buidable:
                 if owner is self.name:
                     pawn.buy_ownership()
                 else:
