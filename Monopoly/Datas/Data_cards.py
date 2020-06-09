@@ -18,9 +18,3 @@ cards_list = [["choice", "community", "Payez une amende de 1.000 F ou bien\n "
                                         " la somme de 2_000 F.", 2_000,
                None]
               ]
-
-
-
-
-# index, action_group, group, sentence, amount_1,
-                 # amount_2=None
