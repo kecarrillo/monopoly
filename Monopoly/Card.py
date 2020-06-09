@@ -1,6 +1,7 @@
 """
 This class creates chance and community cards
 """
+from Monopoly.Game import Game
 
 
 class Card:
@@ -9,7 +10,8 @@ class Card:
     """
 
     # Constructor
-    def __init__(self, name, action_group, group, sentence, amount_1, amount_2=None):
+    def __init__(self, name, action_group, group, sentence, amount_1,
+                 amount_2=None):
         """
 
         :param name: Name of the card.
@@ -51,7 +53,8 @@ class Card:
             self.owner = self.deck_community
 
     def action(self, action_group, amount_1, owner, pawn, amount_2=None):
-        """This method will determine the action to process depending on Game call
+        """This method will determine the action to process depending on Game
+        call.
 
         :param pawn: The current player.
         :type pawn: Pawn
@@ -81,9 +84,9 @@ class Card:
         elif action_group == "earnings":
             self.get_money()
         elif action_group == "choice":
-            self.draw_chance(pawn)
+            self.draw_chance(pawn, amount_1, owner)
         elif action_group == "birthday":
-            self.anniversary(pawn)
+            self.anniversary(pawn, Game.pawns, amount_1)
 
     def pay_bill(self, amount_1, pawn, owner):
         """ This method will pay bill from the pawn to Board or Bank
@@ -148,7 +151,7 @@ class Card:
         :param pawn: The current player.
         :type pawn: Pawn
         :return: Calls the method "go_to_jail()" from Pawn
-        TODO add seealso
+        .. seealso:: Pawn.go_to_jail()
         """
         pawn.go_to_jail()
 
